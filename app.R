@@ -1,6 +1,5 @@
 
 library(shiny)
-
 library(jsonlite)
 library(dplyr)
 library(httr)
@@ -40,7 +39,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   
- 
+ #Chile
   c1 = ("http://cne.cloudapi.junar.com/api/v2/stats/?auth_key=50ec79952723047e1458e769a02a970a93eccdc5") #cne 
   c2 = ("http://api.recursos.penalolen.cl/api/v2/stats/?auth_key=cf62f2ce9b3a44243fc30544845053aeadb34189") #peñalolen
   c3 = ("http://junaebabierta.cloudapi.junar.com/api/v2/stats/?auth_key=687eb54a7c3a489a81bdbd6608e64d256a9fad3e") #junaeb
@@ -48,6 +47,7 @@ server <- function(input, output) {
   c5 = ("http://mpuentealto.cloudapi.junar.com/api/v2/stats/?auth_key=89463a6e47b704634ea8aa575343ae11be3326f6") #puente alto
   c6 = ("http://api.datos.mineduc.cl/api/v2/stats/?auth_key=f22a0a86919812187e3167e380e6ca84333c1457") #mineduc
   c7 = ("https://api.datos.observatoriologistico.cl/api/v2/stats/?auth_key=0ce0637660dae7c6cc528df48307289698126c52") #mtt
+  #Argentina
   c8 = ("http://pilar.cloudapi.junar.com/api/v2/stats/?auth_key=ac0d7fc2804b535637ae44aa5f0bc57c674d3353")#pilar
   
   #parametros
@@ -94,25 +94,58 @@ server <- function(input, output) {
            #'URL Vista' = URL,
            'Categoria' = category,
            'GUID' = guid)
+
+  C5<-fromJSON(paste0(c5,dd), flatten = TRUE)
+  C5<-C5$datastream$stats$resources
+  C5 <- C5 %>% 
+    select('Cantidad Visitas' = count,
+           'Nombre Vista' =title,
+           'Descripción' = description,
+           #'URL Vista' = URL,
+           'Categoria' = category,
+           'GUID' = guid) 
+
+  C6<-fromJSON(paste0(c6,dd), flatten = TRUE)
+  C6<-C6$datastream$stats$resources
+  C6 <- C6 %>% 
+    select('Cantidad Visitas' = count,
+           'Nombre Vista' =title,
+           'Descripción' = description,
+           #'URL Vista' = URL,
+           'Categoria' = category,
+           'GUID' = guid)  
+
+  C7<-fromJSON(paste0(c7,dd), flatten = TRUE)
+  C7<-C7$datastream$stats$resources
+  C7 <- C7 %>% 
+    select('Cantidad Visitas' = count,
+           'Nombre Vista' =title,
+           'Descripción' = description,
+           #'URL Vista' = URL,
+           'Categoria' = category,
+           'GUID' = guid)                
     
 
   
   ###########################################
   
   #cómo puedo hacer que al seleccionar una opcion de la lista, haga el get correspondiente?
-  # ejemplo, SI selcciono "CNE", que se ejecute "C1"
-  # es importante que se ejecute el get para hacer una cnsulta nueva a la API
+  # ejemplo, SI selecciono "CNE", que se ejecute "C1"
+  # es importante que se ejecute el get para hacer una consulta nueva a la API
   
   
   
- #condicionar una Query a una selccion de la Lista 
+ #condicionar una Query a una seleccion de la Lista 
   
   datasetInput <- reactive({
     switch(input$Portales,
            "CNE" = C1,
            "Peñalolen" = C2,
            "Junaeb Abierta" = C3,
-           "Mineria Abierta" = C4)
+           "Mineria Abierta" = C4,
+           "Muni. Puente Alto" = C5,
+           "Mineduc" = C6,
+           "MTT" = C7)
   })
   
   
