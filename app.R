@@ -3,12 +3,15 @@ library(shiny)
 library(jsonlite)
 library(dplyr)
 library(httr)
+library(plotly)
+packageVersion('plotly')
 
 ui <- fluidPage(
    
    
-   titlePanel("Estaditiscas de Hits "),
+   titlePanel("Ranking de Hits Portales "),
    
+   helpText("Los resultados corresponden a los hits acumulados en los últimos 30 días"),
    # Lista de portales
    sidebarLayout(
       sidebarPanel(
@@ -16,18 +19,24 @@ ui <- fluidPage(
                     choices = c(" ","Peñalolen", 
                                 "Junaeb Abierta","Mineduc", "Puente Alto", "MTT",
                                 "CNE", "Mineria Abierta")),
+        br(),
         
-        #actionButton("go", "Aplicar"),
+        helpText("Seleccione el formato de descarga:"),
+        radioButtons("filetype", "Tipo Archivo:",
+                     choices = c("csv", "tsv")),
+       
+       
         hr(),
+        
         downloadButton('downloadData', 'Descargar')
         
       ),
       
-      # Show a plot of the generated distribution
+      
       mainPanel(
-         tableOutput("tabla1")
-         #hr(),
-         #plotOutput("Grafico1")
+         tableOutput("tabla1"),
+         hr(),
+         plotOutput("Grafico1")
       
       )
    )
@@ -143,7 +152,7 @@ server <- function(input, output) {
            "Peñalolen" = C2,
            "Junaeb Abierta" = C3,
            "Mineria Abierta" = C4,
-           "Muni. Puente Alto" = C5,
+           "Puente Alto" = C5,
            "Mineduc" = C6,
            "MTT" = C7)
   })
@@ -157,10 +166,36 @@ server <- function(input, output) {
     datasetInput()
     
   )
+
   
   
+  #### descarga archivos
+  output$downloadData <- downloadHandler(
+    
+       filename = function() {
+      paste(input$Portales, input$filetype, sep = ".")
+    },
+    
+   
+      content = function(file) {
+      sep <- switch(input$filetype, "csv" = ",", "tsv" = "\t")
+      
+      write.table(datasetInput(), file, sep = sep,
+                  row.names = FALSE)
+    }
+  )
   
   
+  ###  Grafico 
+  
+  output$Grafico1 <- renderPlotly({
+    plot_ly(input$datasetInput, 
+             x=datasetInput$`Nombre Vista`,
+             y=datasetInput$`Cantidad Visitas`,
+             type = 'bar',
+             color = datasetInput$Categoria)%>% 
+    config(displayModeBar = F)
+  })
 }
 
 # Run the application 
