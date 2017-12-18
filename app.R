@@ -170,7 +170,7 @@ server <- function(input, output) {
   
   
   
-  # You can access the value of the widget with input$text, e.g.
+#string url api se iran agregando los parametros
   output$value1 <- renderPrint({ input$text1 })
   
   output$value3 <- renderText(paste(datasetInput(),input$text1, sep = ""))
