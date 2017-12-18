@@ -50,14 +50,14 @@ ui <- fluidPage(
       verbatimTextOutput("value3"),
       
       tabsetPanel(type = "tabs",
-                  tabPanel("Vistas", tableOutput("tabla1")),
-                  tabPanel("Visualizaciones", tableOutput("tabla2")),
-                  tabPanel("Colecciones", tableOutput("tabla3"))
+                  tabPanel("Vistas", tableOutput("tabla1"), highchartOutput("plot1", height = "500px")),
+                  tabPanel("Visualizaciones", tableOutput("tabla2"),highchartOutput("plot2", height = "500px")),
+                  tabPanel("Colecciones", tableOutput("tabla3"), highchartOutput("plot3", height = "500px"))
       )
       
       
-    ))
-   )
+    )
+   ))
 
 ###  SERVER ####
 
@@ -264,7 +264,39 @@ server <- function(input, output) {
   
   #plot
   
- 
+  output$plot1 <- renderHighchart({
+    
+    p1 <- hchart(getQuery(), "bar", hcaes(x = `Nombre Vista`, y = `Cantidad Visitas`)) %>% 
+      hc_exporting(
+        enabled = TRUE) %>% 
+      hc_title(text = "Cantidad Hits Vista de Datos")
+    
+    return(p1)
+    
+  })
+  
+  output$plot2 <- renderHighchart({
+    
+    p2 <- hchart(getQueryV(), "bar", hcaes(x = `Nombre Visualización`, y = `Cantidad Visitas`)) %>% 
+      hc_exporting(
+        enabled = TRUE) %>% 
+      hc_title(text = "Cantidad Hits Visualizaciones de Datos")
+    
+    return(p2)
+    
+  })
+  
+  output$plot3 <- renderHighchart({
+    
+    p3 <- hchart(getQueryC(), "bar", hcaes(x = `Nombre Colección`, y = `Cantidad Visitas`)) %>% 
+      hc_exporting(
+        enabled = TRUE) %>% 
+      hc_title(text = "Cantidad Hits Colecciones") 
+    
+    
+    return(p3)
+    
+  })
   
   
   
